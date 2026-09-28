@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ವರ್ಗ ಮತ್ತು ಘನ - ರಸಪ್ರಶ್ನೆ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans Kannada', sans-serif;
+            background: #e8eef5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 720px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+            padding: 20px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .app-header h1 {
+            font-size: 22px;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .app-header h1 span {
+            font-weight: 400;
+            font-size: 14px;
+            color: #bdc9d6;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .header-score {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 6px 20px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-score .label {
+            font-size: 13px;
+            color: #bdc9d6;
+            font-weight: 400;
+        }
+
+        .header-score .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .header-score .value.good {
+            color: #2ecc71;
+        }
+        .header-score .value.average {
+            color: #f1c40f;
+        }
+        .header-score .value.poor {
+            color: #e74c3c;
+        }
+
+        /* Student Info Bar */
+        .student-bar {
+            background: #f8fafc;
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .student-bar label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+        }
+
+        .student-bar input {
+            flex: 1;
+            min-width: 180px;
+            padding: 8px 14px;
+            border: 2px solid #dde4ec;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+
+        .student-bar input:focus {
+            border-color: #2c3e50;
+        }
+
+        /* Progress Bar */
+        .progress-wrap {
+            padding: 16px 28px 0 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c3e50, #4a6a8a);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5a6a;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* Quiz Area */
+        .quiz-area {
+            flex: 1;
+            padding: 24px 28px 20px 28px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-counter {
+            font-size: 13px;
+            color: #8899aa;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a252f;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            min-height: 60px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            color: #1a252f;
+        }
+
+        .option-item:hover {
+            background: #eef2f7;
+            border-color: #bdc9d6;
+        }
+
+        .option-item.selected {
+            background: #e8f0fe;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        .option-item.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option-item.wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .option-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #2c3e50;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option-item .opt-label {
+            font-weight: 600;
+            color: #8899aa;
+            min-width: 24px;
+            font-size: 14px;
+        }
+
+        .option-item .opt-text {
+            flex: 1;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 16px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback.show {
+            display: flex;
+        }
+
+        .feedback.correct-fb {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #b7dfc4;
+        }
+
+        .feedback.wrong-fb {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            padding: 16px 28px 24px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #e2e8f0;
+            background: #fafcfe;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: #1a252f;
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 37, 47, 0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #2c3e50;
+            border: 2px solid #dde4ec;
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background: #f1f6fb;
+            border-color: #bdc9d6;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* Result Screen */
+        .result-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 28px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .result-screen.show {
+            display: flex;
+        }
+
+        .result-icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a252f;
+            margin-bottom: 6px;
+        }
+
+        .result-name {
+            font-size: 18px;
+            color: #4a5a6a;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .result-score-big {
+            font-size: 56px;
+            font-weight: 700;
+            color: #1a252f;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .result-score-big .total {
+            font-size: 24px;
+            color: #8899aa;
+            font-weight: 400;
+        }
+
+        .result-message {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding: 10px 28px;
+            border-radius: 30px;
+        }
+
+        .result-message.good {
+            background: #d4edda;
+            color: #155724;
+        }
+        .result-message.average {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .result-message.poor {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .result-stats {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            min-width: 100px;
+        }
+
+        .stat-box .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a252f;
+        }
+
+        .stat-box .stat-label {
+            font-size: 12px;
+            color: #8899aa;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Review section */
+        .review-section {
+            width: 100%;
+            text-align: left;
+            margin-top: 8px;
+        }
+
+        .review-section h3 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .review-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            background: #f8fafc;
+            border-left: 4px solid #dc3545;
+        }
+
+        .review-item.correct {
+            border-left-color: #28a745;
+        }
+
+        .review-item .r-num {
+            font-weight: 700;
+            color: #2c3e50;
+            min-width: 28px;
+        }
+
+        .review-item .r-text {
+            flex: 1;
+            color: #4a5a6a;
+        }
+
+        .review-item .r-ans {
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .review-item .r-your {
+            font-weight: 600;
+            color: #dc3545;
+            text-decoration: line-through;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .app-header {
+                padding: 16px 20px;
+            }
+            .app-header h1 {
+                font-size: 18px;
+            }
+            .student-bar {
+                padding: 10px 20px;
+            }
+            .student-bar input {
+                min-width: 120px;
+            }
+            .progress-wrap {
+                padding: 12px 20px 0 20px;
+            }
+            .quiz-area {
+                padding: 18px 20px 16px 20px;
+            }
+            .question-text {
+                font-size: 17px;
+                min-height: 50px;
+            }
+            .option-item {
+                padding: 12px 14px;
+                font-size: 15px;
+            }
+            .nav-bar {
+                padding: 12px 20px 18px 20px;
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                flex: 1;
+                justify-content: center;
+            }
+            .result-score-big {
+                font-size: 44px;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .app-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            .nav-bar .btn {
+                display: none;
+            }
+            .student-bar input {
+                border: none;
+                border-bottom: 1px solid #aaa;
+                border-radius: 0;
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+
+    <!-- Header -->
+    <div class="app-header">
+        <h1>ವರ್ಗ ಮತ್ತು ಘನ <span>ಸುಲಭ ರಸಪ್ರಶ್ನೆ - 40 ಪ್ರಶ್ನೆಗಳು</span></h1>
+        <div class="header-score">
+            <span class="label">ಅಂಕ:</span>
+            <span class="value" id="headerScore">0 / 40</span>
+        </div>
+    </div>
+
+    <!-- Student Info Bar -->
+    <div class="student-bar">
+        <label for="studentName">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು:</label>
+        <input type="text" id="studentName" placeholder="ನಿಮ್ಮ ಹೆಸರು ಬರೆಯಿರಿ...">
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-wrap">
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
+
+    <!-- Quiz Area (Question View) -->
+    <div class="quiz-area" id="quizArea">
+        <div class="question-counter" id="questionCounter">ಪ್ರಶ್ನೆ 1 / 40</div>
+        <div class="question-text" id="questionText">ಪ್ರಶ್ನೆ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</div>
+        <div class="options-list" id="optionsList"></div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- Result Screen (Hidden by default) -->
+    <div class="result-screen" id="resultScreen">
+        <div class="result-icon" id="resultIcon">🎉</div>
+        <div class="result-title" id="resultTitle">ರಸಪ್ರಶ್ನೆ ಪೂರ್ಣಗೊಂಡಿದೆ!</div>
+        <div class="result-name" id="resultName"></div>
+        <div class="result-score-big" id="resultScoreBig">0<span class="total"> / 40</span></div>
+        <div class="result-message" id="resultMessage">ಅಭಿನಂದನೆಗಳು!</div>
+        <div class="result-stats">
+            <div class="stat-box">
+                <div class="stat-value" id="statCorrect">0</div>
+                <div class="stat-label">ಸರಿ</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statWrong">0</div>
+                <div class="stat-label">ತಪ್ಪು</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statUnanswered">0</div>
+                <div class="stat-label">ಉತ್ತರಿಸಿಲ್ಲ</div>
+            </div>
+        </div>
+        <div class="review-section" id="reviewSection">
+            <h3>📋 ಉತ್ತರ ಪರಿಶೀಲನೆ</h3>
+            <div id="reviewList"></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="restartQuiz()">🔄 ಮತ್ತೆ ಪ್ರಾರಂಭಿಸಿ</button>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="nav-bar" id="navBar">
+        <button class="btn btn-outline" id="prevBtn" onclick="prevQuestion()" disabled>◀ ಹಿಂದೆ</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">ಮುಂದೆ ▶</button>
+        <button class="btn btn-success" id="finishBtn" onclick="finishQuiz()" style="display:none;">✅ ಮುಗಿಸಿ</button>
+    </div>
+
+</div>
+
+<script>
+    // ===================== QUIZ DATA =====================
+    const questions = [
+        { q: "1² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["1", "2", "3", "4"], ans: 0 },
+        { q: "2² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["2", "4", "6", "8"], ans: 1 },
+        { q: "3² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["6", "9", "12", "15"], ans: 1 },
+        { q: "4² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["8", "12", "16", "20"], ans: 2 },
+        { q: "5² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["10", "15", "20", "25"], ans: 3 },
+        { q: "6² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["12", "24", "36", "48"], ans: 2 },
+        { q: "7² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["14", "28", "42", "49"], ans: 3 },
+        { q: "8² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["16", "64", "32", "48"], ans: 1 },
+        { q: "9² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["18", "36", "81", "72"], ans: 2 },
+        { q: "10² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["10", "100", "1000", "20"], ans: 1 },
+        { q: "1³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["1", "2", "3", "4"], ans: 0 },
+        { q: "2³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["4", "6", "8", "10"], ans: 2 },
+        { q: "3³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["9", "18", "27", "36"], ans: 2 },
+        { q: "4³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["12", "24", "48", "64"], ans: 3 },
+        { q: "5³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["25", "75", "125", "150"], ans: 2 },
+        { q: "6³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["36", "72", "108", "216"], ans: 3 },
+        { q: "7³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["49", "147", "343", "2401"], ans: 2 },
+        { q: "8³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["64", "256", "512", "1024"], ans: 2 },
+        { q: "9³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["81", "243", "729", "2187"], ans: 2 },
+        { q: "10³ ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["100", "1000", "10000", "100000"], ans: 1 },
+        { q: "√9 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["1", "2", "3", "4"], ans: 2 },
+        { q: "√16 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["2", "4", "6", "8"], ans: 1 },
+        { q: "√25 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["5", "10", "15", "20"], ans: 0 },
+        { q: "√36 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["4", "6", "8", "12"], ans: 1 },
+        { q: "√49 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["7", "14", "21", "28"], ans: 0 },
+        { q: "√64 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["4", "6", "8", "16"], ans: 2 },
+        { q: "√81 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["9", "18", "27", "36"], ans: 0 },
+        { q: "√100 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["10", "20", "50", "100"], ans: 0 },
+        { q: "∛8 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["2", "3", "4", "8"], ans: 0 },
+        { q: "∛27 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["3", "6", "9", "27"], ans: 0 },
+        { q: "∛64 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["4", "8", "16", "32"], ans: 0 },
+        { q: "∛125 ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["5", "10", "15", "25"], ans: 0 },
+        { q: "ಒಂದು ಸಂಖ್ಯೆಯ ವರ್ಗವು 49 ಆದರೆ, ಆ ಸಂಖ್ಯೆ ಯಾವುದು?", options: ["5", "6", "7", "8"], ans: 2 },
+        { q: "ಒಂದು ಸಂಖ್ಯೆಯ ವರ್ಗವು 81 ಆದರೆ, ಆ ಸಂಖ್ಯೆ ಯಾವುದು?", options: ["7", "8", "9", "10"], ans: 2 },
+        { q: "ಒಂದು ಸಂಖ್ಯೆಯ ಘನವು 8 ಆದರೆ, ಆ ಸಂಖ್ಯೆ ಯಾವುದು?", options: ["1", "2", "3", "4"], ans: 1 },
+        { q: "ಒಂದು ಸಂಖ್ಯೆಯ ಘನವು 27 ಆದರೆ, ಆ ಸಂಖ್ಯೆ ಯಾವುದು?", options: ["2", "3", "4", "5"], ans: 1 },
+        { q: "12² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["124", "144", "154", "164"], ans: 1 },
+        { q: "15² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["205", "215", "225", "235"], ans: 2 },
+        { q: "20² ರ ಬೆಲೆ ಎಷ್ಟು?", options: ["200", "400", "600", "800"], ans: 1 },
+        { q: "ಒಂದು ಸಂಖ್ಯೆಯ ವರ್ಗವು 144 ಆದರೆ, ಆ ಸಂಖ್ಯೆ ಯಾವುದು?", options: ["10", "11", "12", "13"], ans: 2 }
+    ];
+
+    // ===================== STATE =====================
+    let currentIndex = 0;
+    const totalQuestions = questions.length;
+    let userAnswers = new Array(totalQuestions).fill(null);
+    let quizFinished = false;
+
+    // ===================== DOM REFS =====================
+    const quizArea = document.getElementById('quizArea');
+    const resultScreen = document.getElementById('resultScreen');
+    const navBar = document.getElementById('navBar');
+    const questionCounter = document.getElementById('questionCounter');
+    const questionText = document.getElementById('questionText');
+    const optionsList = document.getElementById('optionsList');
+    const feedback = document.getElementById('feedback');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const finishBtn = document.getElementById('finishBtn');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const headerScore = document.getElementById('headerScore');
+    const studentNameInput = document.getElementById('studentName');
+
+    // ===================== RENDER FUNCTIONS =====================
+    function renderQuestion() {
+        const q = questions[currentIndex];
+        const answered = userAnswers[currentIndex] !== null;
+
+        // Update counter
+        questionCounter.textContent = `ಪ್ರಶ್ನೆ ${currentIndex + 1} / ${totalQuestions}`;
+
+        // Update question text
+        questionText.textContent = q.q;
+
+        // Update options
+        optionsList.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            const label = document.createElement('label');
+            label.className = 'option-item';
+            if (answered && userAnswers[currentIndex] === idx) {
+                label.classList.add('selected');
+            }
+            if (answered) {
+                // Show correct/wrong only after answering
+                if (idx === q.ans) {
+                    label.classList.add('correct');
+                } else if (userAnswers[currentIndex] === idx && idx !== q.ans) {
+                    label.classList.add('wrong');
+                }
+            }
+
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `q${currentIndex}`;
+            radio.value = idx;
+            radio.checked = userAnswers[currentIndex] === idx;
+            radio.disabled = quizFinished;
+            radio.addEventListener('change', () => {
+                if (!quizFinished) {
+                    userAnswers[currentIndex] = idx;
+                    renderQuestion();
+                    updateProgress();
+                    updateHeaderScore();
+                }
+            });
+
+            const optLabel = document.createElement('span');
+            optLabel.className = 'opt-label';
+            optLabel.textContent = String.fromCharCode(65 + idx) + '.';
+
+            const optText = document.createElement('span');
+            optText.className = 'opt-text';
+            optText.textContent = opt;
+
+            label.appendChild(radio);
+            label.appendChild(optLabel);
+            label.appendChild(optText);
+            optionsList.appendChild(label);
+        });
+
+        // Feedback
+        if (answered && !quizFinished) {
+            if (userAnswers[currentIndex] === q.ans) {
+                feedback.className = 'feedback show correct-fb';
+                feedback.textContent = '✅ ಸರಿಯಾದ ಉತ್ತರ!';
+            } else {
+                feedback.className = 'feedback show wrong-fb';
+                feedback.textContent = `❌ ತಪ್ಪು ಉತ್ತರ. ಸರಿಯಾದ ಉತ್ತರ: ${q.options[q.ans]}`;
+            }
+        } else {
+            feedback.className = 'feedback';
+            feedback.textContent = '';
+        }
+
+        // Update nav buttons
+        prevBtn.disabled = currentIndex === 0;
+        if (currentIndex === totalQuestions - 1) {
+            nextBtn.style.display = 'none';
+            finishBtn.style.display = 'inline-flex';
+        } else {
+            nextBtn.style.display = 'inline-flex';
+            finishBtn.style.display = 'none';
+        }
+
+        updateProgress();
+        updateHeaderScore();
+    }
+
+    function updateProgress() {
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        const pct = (answeredCount / totalQuestions) * 100;
+        progressFill.style.width = pct + '%';
+        progressText.textContent = Math.round(pct) + '%';
+    }
+
+    function updateHeaderScore() {
+        let correct = 0;
+        userAnswers.forEach((ans, idx) => {
+            if (ans !== null && ans === questions[idx].ans) correct++;
+        });
+        headerScore.textContent = `${correct} / ${totalQuestions}`;
+
+        // Color coding
+        headerScore.classList.remove('good', 'average', 'poor');
+        if (correct >= 32) headerScore.classList.add('good');
+        else if (correct >= 20) headerScore.classList.add('average');
+        else headerScore.classList.add('poor');
+    }
+
+    // ===================== NAVIGATION =====================
+    function nextQuestion() {
+        if (currentIndex < totalQuestions - 1) {
+            currentIndex++;
+            renderQuestion();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderQuestion();
+        }
+    }
+
+    // ===================== FINISH QUIZ =====================
+    function finishQuiz() {
+        quizFinished = true;
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        const unanswered = totalQuestions - answeredCount;
+
+        // If unanswered, confirm
+        if (unanswered > 0 && !confirm(`ನೀವು ${unanswered} ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಿಲ್ಲ. ನಿಜವಾಗಿಯೂ ಮುಗಿಸಬೇಕೇ?`)) {
+            return;
+        }
+
+        // Calculate score
+        let correct = 0;
+        let wrong = 0;
+        userAnswers.forEach((ans, idx) => {
+            if (ans === null) return;
+            if (ans === questions[idx].ans) correct++;
+            else wrong++;
+        });
+
+        // Show result screen
+        quizArea.style.display = 'none';
+        navBar.style.display = 'none';
+        resultScreen.classList.add('show');
+
+        // Student name
+        const name = studentNameInput.value.trim() || 'ವಿದ್ಯಾರ್ಥಿ';
+        document.getElementById('resultName').textContent = `ವಿದ್ಯಾರ್ಥಿ: ${name}`;
+
+        // Score display
+        document.getElementById('resultScoreBig').innerHTML = `${correct}<span class="total"> / ${totalQuestions}</span>`;
+        document.getElementById('statCorrect').textContent = correct;
+        document.getElementById('statWrong').textContent = wrong;
+        document.getElementById('statUnanswered').textContent = unanswered;
+
+        // Message and icon
+        const icon = document.getElementById('resultIcon');
+        const msg = document.getElementById('resultMessage');
+        msg.classList.remove('good', 'average', 'poor');
+
+        if (correct >= 32) {
+            icon.textContent = '🌟';
+            msg.textContent = 'ಅದ್ಭುತ! ನೀವು ತುಂಬಾ ಚೆನ್ನಾಗಿ ಮಾಡಿದ್ದೀರಿ!';
+            msg.classList.add('good');
+        } else if (correct >= 20) {
+            icon.textContent = '👍';
+            msg.textContent = 'ಒಳ್ಳೆಯ ಪ್ರಯತ್ನ! ಇನ್ನಷ್ಟು ಅಭ್ಯಾಸ ಮಾಡಿ.';
+            msg.classList.add('average');
+        } else {
+            icon.textContent = '📚';
+            msg.textContent = 'ಇನ್ನಷ್ಟು ಅಭ್ಯಾಸ ಅಗತ್ಯವಿದೆ. ಪ್ರಯತ್ನಿಸುತ್ತಿರಿ!';
+            msg.classList.add('poor');
+        }
+
+        // Review list
+        const reviewList = document.getElementById('reviewList');
+        reviewList.innerHTML = '';
+        questions.forEach((q, idx) => {
+            const userAns = userAnswers[idx];
+            const isCorrect = userAns === q.ans;
+            const div = document.createElement('div');
+            div.className = `review-item ${isCorrect ? 'correct' : ''}`;
+
+            let ansHtml = '';
+            if (userAns === null) {
+                ansHtml = `<span class="r-your">ಉತ್ತರಿಸಿಲ್ಲ</span> — <span class="r-ans">ಸರಿ: ${q.options[q.ans]}</span>`;
+            } else if (isCorrect) {
+                ansHtml = `<span class="r-ans">${q.options[q.ans]}</span>`;
+            } else {
+                ansHtml = `<span class="r-your">${q.options[userAns]}</span> — <span class="r-ans">ಸರಿ: ${q.options[q.ans]}</span>`;
+            }
+
+            div.innerHTML = `
+                <span class="r-num">${idx + 1}.</span>
+                <span class="r-text">${q.q}</span>
+                <span>${ansHtml}</span>
+            `;
+            reviewList.appendChild(div);
+        });
+    }
+
+    // ===================== RESTART =====================
+    function restartQuiz() {
+        currentIndex = 0;
+        userAnswers = new Array(totalQuestions).fill(null);
+        quizFinished = false;
+
+        // Show quiz area
+        quizArea.style.display = 'flex';
+        navBar.style.display = 'flex';
+        resultScreen.classList.remove('show');
+
+        // Reset header score
+        headerScore.textContent = '0 / 40';
+        headerScore.classList.remove('good', 'average', 'poor');
+
+        renderQuestion();
+    }
+
+    // ===================== INIT =====================
+    renderQuestion();
+</script>
+
+</body>
+</html>
